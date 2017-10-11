@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chatbot test, vinicius</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script type="text/javascript" src="js/vue.min.js"></script>
+    <script type="text/javascript" src="js/estado-chatbot.js"></script>
+    <style>
+        .message {border:1px solid black; padding: 10px;}
+    </style>
+</head>
+<body>
+    <div id="chatbot">
+        {{title}}
+
+        <div id="messages">
+            <div class="message" v-for="message in messages" v-bind:id="message.id" v-html="message.msg">
+
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="js/message.js"></script>
+    <script type="text/javascript" src="js/chatbot.js"></script>
+
+    <script type="text/javascript">
+        /* CADA UM DESSES ESTADOS DEVERIA FICAR EM UM ARQUIVO SEPARADO*/
+        var inicio = new estadoChatbot(
+            "Oie! Você está planejando o aniversário do seu filho?.\
+         <button v-on:click=\"_('sim')\"> Sim! </button>"
+       );
+        inicio.sim = function(){
+            this.chatbot.values.inicio = 1;
+            this.chatbot.triggerState("inicio-sim");
+        }
+        chatbot.registerState("inicio",inicio);
+
+
+        var sim = new estadoChatbot(
+            "Que legal, é um menino ou menina?\
+            <button v-on:click=\"_('menino')\"> Menino </button>\
+            <button v-on:click=\"_('menina')\"> Menina </button>\
+            ");
+
+        sim.menino = function(evt) {
+            this.set("sexo","menino");
+            this.chatbot.triggerState("idade");
+        }
+        sim.menina = function(){
+            this.set("sexo","menina");
+            this.chatbot.triggerState("idade");
+        }
+        chatbot.registerState("inicio-sim",sim);
+
+
+        var idade = new estadoChatbot(
+            "E quantos aninhos {{_('pronome')}} tem?\
+            <input class='form-control' type='number' v-model=\"options.idade\"/> \
+            <button v-on:click=\"_('confirmar')\">Confirmar</button>\
+            "
+        );
+        idade.pronome = function(){
+            return (this.get("sexo") === "menino") ? "ele" : "ela";
+        }
+        idade.confirmar = function(){
+            this.set("idade",this.getOption('idade'));
+            this.chatbot.triggerState("data");
+        }
+        chatbot.registerState("idade",idade);
+
+
+        var data = new estadoChatbot(
+            "Que legal, {{get('idade')}} aninhos é uma idade mágica!\
+            E quando vai ser a festa? \
+            <input type='date' v-model='options.data'/>\
+            <button v-on:click=\"_('confirmar')\">Confirmar</button>\
+            "
+        );
+
+        data.confirmar = function(){
+            this.set("data",this.getOption('data'));
+            this.chatbot.triggerState("contato");
+        }
+        chatbot.registerState("data",data);
+
+        var contato = new estadoChatbot(
+            "Dia {{_('getFormatedDate')}}, que legal é {{_('getWeekDay')}}. <br />\
+            Quer deixar um contato para te elaborarmos uma proposta?  <br />\
+            Pode ficar tranquila, o orçamento é sem compromisso! \
+            <button v-on:click=\"_('whatsapp')\">Sim, um whatsapp</button>\
+            <button v-on:click=\"_('email')\">Sim, um email</button>\
+            "
+        );
+
+        contato.getDateObject = function(){
+            data = this.get('data');
+            data = data.split('-');
+            data = new Date(data[0],data[1],data[2]);
+            return data;
+        }
+
+        contato.getFormatedDate = function(){
+            date = this.getDateObject();
+            return date.getDate()+"/"+date.getMonth();
+        }
+
+        contato.getWeekDay = function(){
+            weekDays = [
+                "um domingo",
+                "uma segunda",
+                "uma terça",
+                "uma quarta",
+                "uma quinta",
+                "uma sexta"
+            ];
+            date = this.getDateObject();
+            return weekDays[date.getDay()];
+        }
+
+        contato.email = function(){
+            this.set("tipoContato","email");
+            this.chatbot.triggerState("nome");
+        }
+
+        contato.whatsapp = function(){
+            this.set("tipoContato","whatsapp");
+            this.chatbot.triggerState("nome");
+        }
+        chatbot.registerState("contato",contato);
+
+
+        var nome = new estadoChatbot(
+            "Certo! Entraremos em contato por {{get('tipoContato')}}\
+            Para finalizar só precisamos saber seu nome e {{get('tipoContato')}}.\
+            <input type='text' class='form-control' v-model='options.contato' :placeholder=\"_('getPlaceholderContato')\"/>\
+            <input type='text' class='form-control' v-model='options.nome' placeholder='Seu nome'/>\
+            <button v-on:click=\"_('confirmar')\">Confirmar</button>\
+            "
+        );
+        nome.getPlaceholderContato = function(){
+            if (this.get('tipoContato') === "whatsapp") {
+                return "(xx) xxxxx-xxxx";
+            }
+            return "seuemail@gmail.com";
+        }
+        nome.confirmar = function(){
+            this.set("nome",this.getOption('nome'));
+            this.set("contato",this.getOption('contato'));
+            console.log(this.chatbot.values);
+            this.chatbot.triggerState("sucesso");
+        }
+        chatbot.registerState("nome",nome);
+
+        var sucesso = new estadoChatbot(
+            "Combinado {{get('nome')}}, em até dois dias entraremos em contato pelo {{get('tipoContato')}}: {{get('contato')}}!\
+            Com certeza a festinha {{_('getSexo')}} vai ser um sucesso!\
+            "
+        );
+        sucesso.getSexo = function(){
+            if (this.get("sexo") === "menino") {
+                return "do seu menino";
+            } else {
+                return "da sua menina";
+            }
+        }
+        chatbot.registerState("sucesso",sucesso);
+
+        window.setTimeout(function(){
+            chatbot.triggerState("inicio");
+        },1000);
+
+    </script>
+</body>
+</html>
