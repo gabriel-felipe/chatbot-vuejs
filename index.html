@@ -5,23 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Chatbot test, vinicius</title>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet/less" type="text/css" href="css/style.less" >
     <script type="text/javascript" src="js/vue.min.js"></script>
     <script type="text/javascript" src="js/estado-chatbot.js"></script>
-    <style>
-        .message {border:1px solid black; padding: 10px;}
-    </style>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.js"></script>
 </head>
 <body>
-    <div id="chatbot">
-        {{title}}
-
-        <div id="messages">
-            <div class="message" v-for="message in messages" v-bind:id="message.id" v-html="message.msg">
-
+    <div id="chatbot" v-bind:class="{minimized: isMinimized}">
+        <div class="title">
+            {{title}}
+        </div>
+        <div id="chatbot-messages">
+            <div class="message" v-for="message in messages" v-bind:id="message.id">
+                <span class="author">{{message.author}}</span>
+                <div v-html="message.msg"></div>
             </div>
         </div>
-
     </div>
     <script type="text/javascript" src="js/message.js"></script>
     <script type="text/javascript" src="js/chatbot.js"></script>
@@ -169,8 +170,9 @@
         chatbot.registerState("sucesso",sucesso);
 
         window.setTimeout(function(){
+            chatbot.minimized = false;
             chatbot.triggerState("inicio");
-        },1000);
+        },3000);
 
     </script>
 </body>

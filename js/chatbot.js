@@ -4,6 +4,7 @@ var chatbot = new Vue({
         "messageId": 0,
         "title": "Chatbot",
         "name": "Atendente",
+        "minimized": true,
         "messages": [
         ],
         "states": {
@@ -15,6 +16,11 @@ var chatbot = new Vue({
         "state": null, //Property to hold the actual state of the chatbot
         "lastMsg": null
 
+    },
+    computed: {
+        "isMinimized": function(){
+            return this.minimized;
+        }
     },
     created: function(){
     },
@@ -41,6 +47,10 @@ var chatbot = new Vue({
             var msg = {"msg":msg,"author":author,"id":"msg-"+msgId};
             this.messages.push(msg);
             this.lastMsg = msg;
+            window.setTimeout(function(){
+                var messageHolder = document.getElementById("chatbot-messages");
+                messageHolder.scrollTop = messageHolder.scrollHeight;
+            },10);
 
             return msg;
         }
