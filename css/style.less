@@ -9,7 +9,15 @@
     transition: all 0.3s;
     &.minimized {
         bottom: -270px;
+        .title {
+            cursor: pointer;
+            .close {
+                visibility: hidden;
+                opacity: 0;
+            }
+        }
     }
+
     .title {
         width: 100%;
         background:rgb(47, 84, 195);
@@ -18,7 +26,15 @@
         padding: 0 10px;
         text-align: center;
         color: #fff;
+        position: relative;
+        .close {
+            position: absolute;
+            right: 5px;
+            top: 3px;
+            transition: all 0.3s;
+        }
     }
+
     #chatbot-messages {
         height: calc(~"100% - 30px");
         width: 100%;
@@ -33,6 +49,10 @@
                 display: block;
                 clear: both;
                 margin-top: 5px;
+                &.error {
+                    background: rgb(240, 66, 66);
+                    color: #fff;
+                }
             }
 
             button {
@@ -66,6 +86,7 @@
                 background: #eee;
                 button {
                     background: #888;
+                    cursor: default;
                 }
             }
 

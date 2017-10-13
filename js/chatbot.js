@@ -14,8 +14,7 @@ var chatbot = new Vue({
 
         },
         "state": null, //Property to hold the actual state of the chatbot
-        "lastMsg": null
-
+        "lastMsg": null,
     },
     computed: {
         "isMinimized": function(){
@@ -25,9 +24,9 @@ var chatbot = new Vue({
     created: function(){
     },
     methods: {
-        registerState: function(name,state){
+        registerState: function(state){
             state.chatbot = this;
-            this.states[name] = state
+            this.states[state.name] = state
         },
         triggerState: function(name){
             if (this.state) {
@@ -41,10 +40,14 @@ var chatbot = new Vue({
                 }
             },10)
         },
-        appendMsg: function(msg,author){
+        toggleMinimize: function(){
+            this.minimized = !this.minimized;
+            return this;
+        },
+        appendMsg: function(msg,author,component){
             this.messageId = this.messageId+1;
             var msgId = "msg-"+this.messageId;
-            var msg = {"msg":msg,"author":author,"id":"msg-"+msgId};
+            var msg = {"msg":msg,"author":author,"id":"msg-"+msgId,"component":"message-"+component};
             this.messages.push(msg);
             this.lastMsg = msg;
             window.setTimeout(function(){
@@ -53,6 +56,12 @@ var chatbot = new Vue({
             },10);
 
             return msg;
+        },
+        set: function(key,value){
+            this.values[key] = value;
+        },
+        get: function(key){
+            return this.values[key];
         }
     }
 });
