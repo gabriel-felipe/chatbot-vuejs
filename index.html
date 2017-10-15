@@ -28,9 +28,15 @@
     <script type="text/javascript">
         /* CADA UM DESSES ESTADOS DEVERIA FICAR EM UM ARQUIVO SEPARADO*/
         var inicio = new estadoChatbot("inicio",
-            "Oie! Você está planejando o aniversário do seu filho?.\
+            "Oie! Você está planejando o aniversário do seu filho?\
             <button v-on:click=\"sim()\"> Sim! </button>"
        );
+       inicio.mainTemplateProbability = 10;
+       inicio.addVariant("Oie! Tem festinha chegando?\
+       <button v-on:click=\"sim()\"> Sim! </button>");
+       inicio.addVariant("Oie! Tem festinha de criança chegando?\
+       <button v-on:click=\"sim()\"> Sim! </button>");
+
        inicio.methods.sim = function(){
             this.chatbot.set("inicio",1);
             this.chatbot.triggerState("inicio-sim");

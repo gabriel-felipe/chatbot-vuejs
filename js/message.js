@@ -2,7 +2,7 @@ var messageFactory = function(state){
     messageComponent = Vue.component('message-'+state.name, {
         template: '<div class="message" v-bind:id="message.id">\
             <span class="author">{{message.author}}</span>\
-            <div>'+state.template+'</div>\
+            <div>'+state.getTemplate()+'</div>\
         </div>',
         "props": {
             message: Object
