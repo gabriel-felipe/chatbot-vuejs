@@ -15,6 +15,9 @@ var chatbot = new Vue({
         },
         "state": null, //Property to hold the actual state of the chatbot
         "lastMsg": null,
+        "events": {
+            "changeState": []
+        }
     },
     computed: {
         "isMinimized": function(){
@@ -37,6 +40,7 @@ var chatbot = new Vue({
                 if (typeof(_self.states[name]) !== "undefined") {
                     _self.states[name].init();
                     _self.actualState = _self.states[name];
+                    _self.trigger("changeState",_self.states[name]);
                 }
             },10)
         },
@@ -47,7 +51,7 @@ var chatbot = new Vue({
         appendMsg: function(msg,author,component){
             this.messageId = this.messageId+1;
             var msgId = "msg-"+this.messageId;
-            var msg = {"msg":msg,"author":author,"id":"msg-"+msgId,"component":"message-"+component};
+            var msg = {"msg":msg,"author":author,"id":"chatbot-"+msgId,"component":"message-"+component};
             this.messages.push(msg);
             this.lastMsg = msg;
             window.setTimeout(function(){
@@ -62,6 +66,26 @@ var chatbot = new Vue({
         },
         get: function(key){
             return this.values[key];
+        },
+        on: function(evt,callback){
+            if (typeof(this.events[evt]) === "undefined") {
+                throw "Unknown event";
+            }
+            if (!callback instanceof Function) {
+                throw "callback is not a function";
+            }
+            this.events[evt].push(callback);
+        },
+        trigger: function(evt){
+            args = Array.prototype.slice.call(arguments, 1);
+
+            if (typeof(this.events[evt]) === "undefined") {
+                throw "Unknown event";
+            }
+            for (f in this.events[evt]) {
+                callback = this.events[evt][f];
+                callback.apply(this,args);
+            }
         }
     }
 });
