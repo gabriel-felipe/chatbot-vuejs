@@ -13,7 +13,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.js"></script>
 </head>
 <body>
-    <div id="chatbot" v-bind:class="{minimized: isMinimized}">
+    <div id="chatbot" v-bind:class="{minimized: isMinimized, interacted: messages.length > 1}">
         <div class="title" v-on:click="toggleMinimize()">
             {{title}}
             <div class="close">x</div>
@@ -36,7 +36,7 @@
        inicio.addVariant("Oie! Tem festinha de criança chegando?\
        <button v-on:click=\"sim()\"> Sim! </button>");
 
-       inicio.mainTemplateProbability = 50;
+       inicio.mainTemplateProbability = 0;
 
 
        inicio.methods.sim = function(){

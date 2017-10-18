@@ -8,7 +8,8 @@
     box-shadow: -1px -1px 1px rgba(0,0,0,0.3);
     transition: all 0.3s;
     &.minimized {
-        bottom: -270px;
+        top: 100%;
+        margin-top: -30px;
         .title {
             cursor: pointer;
             .close {
@@ -95,5 +96,16 @@
             font-weight: 700;
             color: #666;
         }
+    }
+}
+
+@media only screen and (max-device-width: 480px) {
+    #chatbot {
+        width: 100%;
+        left: 0;
+    }
+
+    #chatbot.interacted {
+        height: 100%;
     }
 }
